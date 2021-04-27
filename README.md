@@ -14,6 +14,8 @@ docker-compose up -d --build
 habilitar el env
 ```sh
 pip install -r requirements.txt
+python manage.py makemigrations
+python manage.py migrate
 python manage.y runserver
 ```
 
