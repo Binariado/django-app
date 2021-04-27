@@ -41,7 +41,7 @@ def deactivate_expired_accounts():
 
 def start():
     scheduler = BackgroundScheduler()
-    scheduler.add_job(deactivate_expired_accounts, 'interval', seconds=3)
+    scheduler.add_job(deactivate_expired_accounts, 'interval', seconds=1800)
     scheduler.start()
 
 init = False
