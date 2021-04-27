@@ -1,0 +1,23 @@
+[
+  {
+    "model": "authentication.customer",
+    "pk": 1,
+    "fields": {
+      "name": "administrador"
+    }
+  },
+  {
+    "model": "authentication.customer",
+    "pk": 2,
+    "fields": {
+      "name": "conductor"
+    }
+  },
+  {
+    "model": "authentication.customer",
+    "pk": 2,
+    "fields": {
+      "name": "tecnico"
+    }
+  }
+]

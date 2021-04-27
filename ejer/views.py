@@ -1,9 +1,12 @@
 from django.shortcuts import render
 from rest_framework import generics, mixins, status
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from .models import Characters
 from .serializer import CharactersSerilizer
+from rest_framework.permissions import IsAuthenticated
+from app_django.permissions import IsAdministrador
+from django.contrib.auth.decorators import user_passes_test
 
 # Create your views here.
 class CharactersViews(generics.ListCreateAPIView):
@@ -33,6 +36,7 @@ def is_palindromo(text):
   else:
     return False
 
+@permission_classes([IsAuthenticated, IsAdministrador])
 class Palindromos(generics.GenericAPIView):
   def post(self, request, *args, **kwargs):
     text = request.data.get('text')

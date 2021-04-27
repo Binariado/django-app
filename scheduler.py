@@ -25,8 +25,7 @@ def insert_haracter(name, gender):
 		}
 		files=[]
 		headers = {}
-		response = requests.request("POST", url, headers=headers, data=payload, files=files)
-		print(response.json())
+		requests.request("POST", url, headers=headers, data=payload, files=files)
 	except Exception as e:
 		print(e) 
 
@@ -42,7 +41,7 @@ def deactivate_expired_accounts():
 
 def start():
     scheduler = BackgroundScheduler()
-    scheduler.add_job(deactivate_expired_accounts, 'interval', seconds=1800)
+    scheduler.add_job(deactivate_expired_accounts, 'interval', seconds=3)
     scheduler.start()
 
 init = False

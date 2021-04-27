@@ -1,16 +1,22 @@
 # set base image (host OS)
 FROM python:3.9
+  ENV PYTHONUNBUFFERED 1  
+  
+  RUN apt-get update && apt-get install -y supervisor && apt-get install -y cron
 
-# working directory
-WORKDIR /app_django
-# dependencies file to the working directory
-COPY requirements.txt .
+  RUN mkdir -p /var/log/supervisor
 
-# install dependencies
-RUN pip install -r requirements.txt
+  COPY config/etc/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+  RUN mkdir /config  
+ 
+  COPY requirements.txt /config/requirements.txt 
+  RUN pip install -r /config/requirements.txt
+  RUN mkdir /app_django
+  COPY . /app_django/
 
-# copy content to the working directory
-COPY / .
+  # make script executable
+  RUN chmod +x /app_django/scheduler.py
 
-# command to run on container start
-CMD [ "python", "./manage.py", "runserver" ]
+  WORKDIR /app_django
+
+  CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]

@@ -3,7 +3,7 @@ from rest_framework import generics, mixins, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializer import RegisterSerializer, UserSerializer, UserUpdateSerializer
 
@@ -57,15 +57,17 @@ def get_user(request, pk=None):
   }, status=status.HTTP_404_NOT_FOUND)
 
 
-@permission_classes([IsAuthenticated])
-class UserUpdate(generics.UpdateAPIView):
-  serializer_class = UserUpdateSerializer
-  queryset = User.objects.all()
+# @permission_classes([IsAuthenticated])
+# class UserUpdate(generics.UpdateAPIView):
+#   serializer_class = UserUpdateSerializer
+#   queryset = User.objects.all()
 
 @api_view(["GET", "PUT"])
 @permission_classes([IsAuthenticated])
 def user_detail(request, pk=None):
   user = User.objects.filter(id = pk).first()
+  user_s = UserSerializer(request.user).data
+  role = request.data.get('role')
 
   if user:
 
@@ -75,10 +77,18 @@ def user_detail(request, pk=None):
       }, status=status.HTTP_200_OK)
 
     if request.method == 'PUT':
-      user_serializer =  UserUpdateSerializer(user, data=request.data)
+      
+      if user_s['id'] != pk:
+        return Response({
+          "errors": "Not authorized"
+        }, status=401)
 
+      user_serializer =  UserUpdateSerializer(user, data=request.data)
       if user_serializer.is_valid():
         user_serializer.save()
+        user.groups.clear()
+        group = Group.objects.get(name=role)
+        group.user_set.add(user)
         return Response({
           'user': user_serializer.data,
         }, status=status.HTTP_200_OK)
